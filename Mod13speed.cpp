@@ -27,10 +27,13 @@ int multi(int a, int b) {return (a*b)%13;}
 int div1(int a, int b) {return (a*MOD13inv[b])%13;}
 int div2(int a, int b) {return (b*MOD13inv[a])%13;}
 
+
 int main(){
     srand((unsigned int) time(NULL));
 
+    //プレイヤーのカード
     queue<int> p1, p2;
+    //全てのカード
     vi card;
     for(int i=1; i<=13; i++){
         for(int j=0; j<4; j++){
@@ -61,6 +64,15 @@ int main(){
 
     cout << a << " " << b << endl;
     cout << add(a,b)<<" "<<sub1(a,b)<<" "<<sub2(a,b)<<" "<<multi(a,b)<<" "<<div1(a,b)<<" "<<div2(a,b)<<endl;
+
+    //出せる数字
+    set<int> available_num;
+    available_num.insert(add(a,b));
+    available_num.insert(sub1(a,b));
+    available_num.insert(sub2(a,b));
+    available_num.insert(multi(a,b));
+    available_num.insert(div1(a,b));
+    available_num.insert(div2(a,b));
 
     return 0;
 }
