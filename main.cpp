@@ -79,13 +79,19 @@ struct Game{
             }
             //どちらも出せる場合
             else{
-                if(selectplayer()) cardchange(nump1, player1);
-                else cardchange(nump2, player2);
+                if(selectplayer()){
+                    cardchange(nump1, player1);
+                    cout << "p1:"<<nump1<<endl;
+                }
+                else{
+                    cardchange(nump2, player2);
+                    cout << "p2:"<<nump2<<endl;
+                }
             }
 
             for(int i=0; i<4; i++) cout << player1.card4[i] << " ";
             cout << "rem: " << player1.q.size() << endl;
-            cout << x << "  "<<y << endl;
+            cout << "  "<< x << "  "<<y << endl;
             for(int i=0; i<4; i++) cout << player2.card4[i] << " ";
             cout << "rem: " << player2.q.size() << endl;
             cout << endl;
