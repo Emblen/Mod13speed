@@ -46,20 +46,13 @@ struct Game{
     int x, y;
     
     Game()
-    : p1can(0), p2can(0), player1(), player2()
+    : p1can(0), p2can(0), player1(), player2(), x(0), y(0)
     {
         distribute_card();
     }
 
     void gamestart(){
         while(!(player1.q.empty()) && !(player2.q.empty())){
-
-            for(int i=0; i<4; i++) cout << player1.card4[i] << " ";
-            cout << "rem: " << player1.q.size() << endl;
-            cout << x << "  "<<y << endl;
-            for(int i=0; i<4; i++) cout << player2.card4[i] << " ";
-            cout << "rem: " << player2.q.size() << endl;
-            cout << endl;
 
 
             //出せるカードがあるか
@@ -71,21 +64,32 @@ struct Game{
             if(nump1==INF && nump2==INF){
                 x = player1.q.front(); player1.q.pop();
                 y = player2.q.front(); player2.q.pop();
+                cout << "p1:"<<x<<" p2:"<<y<<endl;
             }
             //どちらのプレイヤーがカードを出すか
             //p2のみ出せる場合
             else if(nump1==INF && nump2!=INF){
                 cardchange(nump2, player2);
+                cout << "p2:"<<nump2<<endl;
             }
             //p1のみ出せる場合
             else if(nump1!=INF && nump2==INF){
                 cardchange(nump1, player1);
+                cout << "p1:"<<nump1<<endl;
             }
             //どちらも出せる場合
             else{
                 if(selectplayer()) cardchange(nump1, player1);
                 else cardchange(nump2, player2);
             }
+
+            for(int i=0; i<4; i++) cout << player1.card4[i] << " ";
+            cout << "rem: " << player1.q.size() << endl;
+            cout << x << "  "<<y << endl;
+            for(int i=0; i<4; i++) cout << player2.card4[i] << " ";
+            cout << "rem: " << player2.q.size() << endl;
+            cout << endl;
+
         }
         cout << "FINISH" << endl;
         if(player1.q.empty()) cout << "Player1 won!!" << endl;
@@ -96,16 +100,18 @@ struct Game{
         for(int i=0; i<4; i++){
             if(cardnum == p.card4[i]){
                 int newcard = p.q.front(); p.q.pop();
+                p.card4[i] = newcard;
                 //カードをx,yどちらに出すか
-                if(selectplayer()) x = newcard;
-                else y = newcard;
+                if(selectplayer()) x = cardnum;
+                else y = cardnum;
+                break;
             }
         }
     }
 
     //出せるカードがなければINFを返す
     //出せるカードがあればその数を一つランダムで返す
-    int canplayerpullout(set<int> cards, Player& p){
+    int canplayerpullout(set<int> cards, Player p){
         //同じカードが滞留するのを防ぐためにカードをシャッフル
         mt19937 engine((unsigned int) time(NULL));
         shuffle(all(p.card4), engine);
