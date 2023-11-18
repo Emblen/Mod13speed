@@ -2,6 +2,8 @@
     "files.associations": {
         "iostream": "cpp",
         "ostream": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "random": "cpp",
+        "queue": "cpp"
     }
 }

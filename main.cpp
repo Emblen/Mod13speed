@@ -179,13 +179,6 @@ struct Game{
         x = player1.q.front(); player1.q.pop();
         y = player2.q.front(); player2.q.pop();
 
-        //よさそう
-        // for(int i=0; i<4; i++) cout << player1.card4[i] << " ";
-        // cout << endl;
-        // for(int i=0; i<4; i++) cout << player2.card4[i] << " ";
-        // cout << endl;
-        // cout << x << " " << y << endl;
-        // cout << player1.q.size() << " " << player2.q.size() << endl;
     }
 };
 

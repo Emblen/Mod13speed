@@ -52,8 +52,20 @@ struct Game{
     }
 
     void gamestart(){
-        while(!(cpu.q.empty()) && !(player.q.empty())){
+        first_battle();
+        //どちらかの手札がなくなって場に4枚しかなくなった場合
+        if(cpu.q.empty()){
+            if(second_battle(cpu, player)) final_battle(cpu, player);
+        }
+        else{
+            if(second_battle(player, cpu)) final_battle(player, cpu);
+        }
 
+        cout << "FINISH" << endl;
+    }
+
+    void first_battle(){
+        while(!(cpu.q.empty()) && !(player.q.empty())){
 
             //出せるカードがあるか
             set<int> cards = canbeplayed(x,y);
@@ -97,16 +109,160 @@ struct Game{
             cout << endl;
 
         }
-        cout << "FINISH" << endl;
-        if(cpu.q.empty()) cout << "cpu won!!" << endl;
-        else cout << "player won!!" << endl;
     }
+    //一方のプレイヤーの手札がなくなったときの処理
+    int second_battle(Player& p1, Player& p2){
+        //p1は手札がなくなったほう
+        bool flag = 1;
+
+        while(flag){
+            //出せるカードがあるか
+            set<int> cards = canbeplayed(x,y);
+            int nump1 = canplayerpullout(cards, p1);
+            int nump2 = canplayerpullout(cards, p2);
+
+            if(nump1==INF && nump2==INF){
+                x = random4(p1);
+                y = p2.q.front(); p2.q.pop();
+                cout << "p1:"<<x<<" p2:"<<y<<endl;
+            }
+            //どちらのプレイヤーがカードを出すか
+            //p2のみ出せる場合
+            else if(nump1==INF && nump2!=INF){
+                cardchange(nump2, p2);
+                cout << "p2:"<<nump2<<endl;
+            }
+            //p1のみ出せる場合
+            else if(nump1!=INF && nump2==INF){
+                cardchange_rem4(nump1, p1);
+                cout << "p1:"<<nump1<<endl;
+            }
+            //どちらも出せる場合
+            else{
+                if(selectplayer()){
+                    cardchange_rem4(nump1, p1);
+                    cout << "p1:"<<nump1<<endl;
+                }
+                else{
+                    cardchange(nump2, p2);
+                    cout << "p2:"<<nump2<<endl;
+                }
+            }
+
+            //出力
+            int infcnt = 0;
+            for(int i=0; i<4; i++){
+                if(p1.card4[i]==INF) {infcnt++; cout << "- ";}
+                else cout << p1.card4[i] << " ";
+            }
+            cout << endl;
+            cout << "  "<< x << "  "<< y << endl;
+            for(int i=0; i<4; i++) cout << p2.card4[i] << " ";
+            cout << "rem: " << p2.q.size() << endl;
+            cout << endl;
+            
+            //p2も手札がなくなったら次の段階に進む
+            if(p2.q.empty() || infcnt==4) flag = 0;
+        }
+        //p2がemptyになったらfinal_battleへ進む，そうでなければp1の勝ちでゲームセット
+        if(p2.q.empty()) return 1;
+        else return 0;
+    }
+    //両方のプレイヤーが場にある札のみになったときの処理
+    void final_battle(Player& p1, Player& p2){
+        bool flag = 1;
+
+        while(flag){
+            //出せるカードがあるか
+            set<int> cards = canbeplayed(x,y);
+            int nump1 = canplayerpullout(cards, p1);
+            int nump2 = canplayerpullout(cards, p2);
+
+            if(nump1==INF && nump2==INF){
+                x = random4(p1);
+                y = random4(p2);
+                cout << "p1:"<<x<<" p2:"<<y<<endl;
+            }
+            //どちらのプレイヤーがカードを出すか
+            //p2のみ出せる場合
+            else if(nump1==INF && nump2!=INF){
+                cardchange_rem4(nump2, p2);
+                cout << "p2:"<<nump2<<endl;
+            }
+            //p1のみ出せる場合
+            else if(nump1!=INF && nump2==INF){
+                cardchange_rem4(nump1, p1);
+                cout << "p1:"<<nump1<<endl;
+            }
+            //どちらも出せる場合
+            else{
+                if(selectplayer()){
+                    cardchange_rem4(nump1, p1);
+                    cout << "p1:"<<nump1<<endl;
+                }
+                else{
+                    cardchange_rem4(nump2, p2);
+                    cout << "p2:"<<nump2<<endl;
+                }
+            }
+
+            //出力
+            int infcnt = 0;
+            int tmp = 0;
+            for(int i=0; i<4; i++){
+                if(p1.card4[i]==INF) {tmp++; cout << "- ";}
+                else cout << p1.card4[i] << " ";
+            }
+            cout << endl;
+            infcnt = tmp;
+            tmp = 0;
+            cout << "  "<< x << "  "<< y << endl;
+            for(int i=0; i<4; i++){
+                if(p2.card4[i]==INF) {tmp++; cout << "- ";}
+                else cout << p2.card4[i] << " ";
+            }
+            cout << endl;            
+            cout << endl;
+            
+            infcnt = max(infcnt, tmp);
+            if(infcnt==4) flag = 0;
+        }
+    }
+
+    //両方詰まったときに場にある手札の中からランダムに数字を選ぶ
+    int random4(Player& p){
+        vi remcards;
+        for(int i=0; i<4; i++){
+            if(p.card4[i]!=INF) remcards.push_back(p.card4[i]);
+        }
+        mt19937 engine((unsigned int) time(NULL));
+        shuffle(all(remcards), engine);
+
+        for(int i=0; i<4; i++){
+            if(p.card4[i]==remcards[0]) {p.card4[i] = INF; break;}
+        }
+        return remcards[0];
+    }
+
+
     //カードを出した後の操作
     void cardchange(int cardnum, Player& p){
         for(int i=0; i<4; i++){
             if(cardnum == p.card4[i]){
                 int newcard = p.q.front(); p.q.pop();
                 p.card4[i] = newcard;
+                //カードをx,yどちらに出すか
+                if(selectplayer()) x = cardnum;
+                else y = cardnum;
+                break;
+            }
+        }
+    }
+    //手札が場にあるものになったときの，カードを出した後の操作
+    void cardchange_rem4(int cardnum, Player& p){
+        for(int i=0; i<4; i++){
+            if(cardnum == p.card4[i]){
+                p.card4[i] = INF;
                 //カードをx,yどちらに出すか
                 if(selectplayer()) x = cardnum;
                 else y = cardnum;
@@ -179,13 +335,6 @@ struct Game{
         x = cpu.q.front(); cpu.q.pop();
         y = player.q.front(); player.q.pop();
 
-        //よさそう
-        // for(int i=0; i<4; i++) cout << cpu.card4[i] << " ";
-        // cout << endl;
-        // for(int i=0; i<4; i++) cout << player.card4[i] << " ";
-        // cout << endl;
-        // cout << x << " " << y << endl;
-        // cout << cpu.q.size() << " " << player.q.size() << endl;
     }
 };
 
