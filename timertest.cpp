@@ -70,12 +70,12 @@ int main(){
                 else {
                     flag = 1;
                     string ms = (v[1]=="r") ? "right":"left";
-                    cout << "you play " << userinput << " to " << ms << endl;
+                    cout << userinput << " " << ms << endl;
                 }
             }
             else buf.push_back(ch);
         }        
     }
-    if(!flag) cout << "CPU play" << endl; 
+    if(!flag) cout << "CPU played" << endl; 
     return 0;
 }
