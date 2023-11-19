@@ -4,6 +4,9 @@
         "ostream": "cpp",
         "stdexcept": "cpp",
         "random": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "set": "cpp",
+        "xstring": "cpp",
+        "utility": "cpp"
     }
 }
