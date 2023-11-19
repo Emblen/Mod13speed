@@ -50,12 +50,11 @@ struct Player{
 struct Game{
     Player cpu, player;
     //それぞれのプレイヤーが場に出せるカードがあるか
-    bool p1can, p2can;
     //場にある2枚のカード
     int x, y;
     
     Game()
-    : p1can(0), p2can(0), cpu(), player(), x(0), y(0)
+    : cpu(), player(), x(0), y(0)
     {
         distribute_card();
     }
@@ -308,7 +307,6 @@ struct Game{
     //てきとうな数を1つ生成して奇数か偶数か
     bool selectplayer(){
         int num = rand();
-        // outlog << num << endl;
         if(num%2) return 1;
         else return 0;
     }
