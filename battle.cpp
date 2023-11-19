@@ -89,6 +89,7 @@ struct Game{
             
             //どちらもカードを出せない場合 新たに場にカードを供給する
             if(nump1==INF && nump2==INF){
+                outlog << "出せるカードがありません．リスタートします" << endl;
                 x = cpu.q.front(); cpu.q.pop();
                 y = player.q.front(); player.q.pop();
                 outlog << "p1:"<<x<<" p2:"<<y<<endl;

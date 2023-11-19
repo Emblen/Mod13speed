@@ -30,7 +30,7 @@ int main(){
     bool flag = 0;
     string buf;
     vector<string> v;
-    int userinput;
+    int input;
 
     start = chrono::system_clock::now();
     //入力があるまで時間を計り続ける
@@ -56,21 +56,21 @@ int main(){
                 
                 //数字に変換できるかのエラー処理
                 try {
-                    userinput = stoi(v[0]);
+                    input = stoi(v[0]);
                 }
                 catch(invalid_argument& e){
                     cout << "INPUT RETRY" << endl;
                     continue;
                 }
                 //入力が多すぎたり数値が大きすぎたらエラー
-                if((int)v.size()!=2 || userinput<1 || userinput>13 || !(v[1]=="r"||v[1]=="l")){
+                if((int)v.size()!=2 || input<1 || input>13 || !(v[1]=="r"||v[1]=="l")){
                     cout << "INPUT RETRY" << endl;
                     continue;
                 }
                 else {
                     flag = 1;
                     string ms = (v[1]=="r") ? "right":"left";
-                    cout << userinput << " " << ms << endl;
+                    cout << input << " " << ms << endl;
                 }
             }
             else buf.push_back(ch);

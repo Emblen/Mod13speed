@@ -7,6 +7,9 @@
 #include <random>
 #include <time.h>
 #include <fstream>
+#include <chrono>
+#include <conio.h>
+#include <sstream>
 #define INF 1e9
 #define vi vector<int>
 #define vb vector<bool>
@@ -18,8 +21,6 @@
 #define all(x) x.begin(),x.end()
 using namespace std;
 using ll = long long;
-
-ofstream outlog("log.txt");
 
 vi MOD13inv = {0, 1, 7, 9, 10, 8, 11, 2, 5, 3, 4, 6, 12, 0};
 //四則演算
@@ -60,12 +61,12 @@ struct Game{
     }
 
     void gamestart(){
-        for(int i=0; i<4; i++) outlog << cpu.card4[i] << " ";
-        outlog << "rem: " << cpu.q.size() << endl;
-        outlog << "  "<< x << "  "<<y << endl;
-        for(int i=0; i<4; i++) outlog << player.card4[i] << " ";
-        outlog << "rem: " << player.q.size() << endl;
-        outlog << endl;
+        for(int i=0; i<4; i++) cout << cpu.card4[i] << " ";
+        cout << "rem: " << cpu.q.size() << endl;
+        cout << "  "<< x << "  "<<y << endl;
+        for(int i=0; i<4; i++) cout << player.card4[i] << " ";
+        cout << "rem: " << player.q.size() << endl;
+        cout << endl;
 
         first_battle();
         //どちらかの手札がなくなって場に4枚しかなくなった場合
@@ -76,7 +77,7 @@ struct Game{
             if(second_battle(player, cpu)) final_battle(player, cpu);
         }
 
-        outlog << "FINISH" << endl;
+        cout << "FINISH" << endl;
     }
 
     void first_battle(){
@@ -86,42 +87,50 @@ struct Game{
             set<int> cards = canbeplayed(x,y);
             int nump1 = canplayerpullout(cards, cpu);
             int nump2 = canplayerpullout(cards, player);
-            
+
             //どちらもカードを出せない場合 新たに場にカードを供給する
             if(nump1==INF && nump2==INF){
                 x = cpu.q.front(); cpu.q.pop();
                 y = player.q.front(); player.q.pop();
-                outlog << "p1:"<<x<<" p2:"<<y<<endl;
+                cout << "RESTART" << endl;
+                cout << "cpu:"<<x<<" you:"<<y<<endl;
+
+                continue;
             }
+            
             //どちらのプレイヤーがカードを出すか
             //p2のみ出せる場合
-            else if(nump1==INF && nump2!=INF){
+            if(nump1==INF && nump2!=INF){
                 cardchange(nump2, player);
-                outlog << "p2:"<<nump2<<endl;
+                cout << "p2:"<<nump2<<endl;
             }
             //p1のみ出せる場合
             else if(nump1!=INF && nump2==INF){
                 cardchange(nump1, cpu);
-                outlog << "p1:"<<nump1<<endl;
+                cout << "p1:"<<nump1<<endl;
             }
             //どちらも出せる場合
             else{
-                if(selectplayer()){
-                    cardchange(nump1, cpu);
-                    outlog << "p1:"<<nump1<<endl;
-                }
-                else{
-                    cardchange(nump2, player);
-                    outlog << "p2:"<<nump2<<endl;
-                }
+
+                //ユーザー入力を受ける
+                pair<bool, pair<int, char>> uin = userinput(nump1, cards);
+
+                // if(selectplayer()){
+                //     cardchange(nump1, cpu);
+                //     cout << "p1:"<<nump1<<endl;
+                // }
+                // else{
+                //     cardchange(nump2, player);
+                //     cout << "p2:"<<nump2<<endl;
+                // }
             }
 
-            for(int i=0; i<4; i++) outlog << cpu.card4[i] << " ";
-            outlog << "rem: " << cpu.q.size() << endl;
-            outlog << "  "<< x << "  "<<y << endl;
-            for(int i=0; i<4; i++) outlog << player.card4[i] << " ";
-            outlog << "rem: " << player.q.size() << endl;
-            outlog << endl;
+            for(int i=0; i<4; i++) cout << cpu.card4[i] << " ";
+            cout << "rem: " << cpu.q.size() << endl;
+            cout << "  "<< x << "  "<<y << endl;
+            for(int i=0; i<4; i++) cout << player.card4[i] << " ";
+            cout << "rem: " << player.q.size() << endl;
+            cout << endl;
 
         }
     }
@@ -139,42 +148,42 @@ struct Game{
             if(nump1==INF && nump2==INF){
                 x = random4(p1);
                 y = p2.q.front(); p2.q.pop();
-                outlog << "p1:"<<x<<" p2:"<<y<<endl;
+                cout << "p1:"<<x<<" p2:"<<y<<endl;
             }
             //どちらのプレイヤーがカードを出すか
             //p2のみ出せる場合
             else if(nump1==INF && nump2!=INF){
                 cardchange(nump2, p2);
-                outlog << "p2:"<<nump2<<endl;
+                cout << "p2:"<<nump2<<endl;
             }
             //p1のみ出せる場合
             else if(nump1!=INF && nump2==INF){
                 cardchange_rem4(nump1, p1);
-                outlog << "p1:"<<nump1<<endl;
+                cout << "p1:"<<nump1<<endl;
             }
             //どちらも出せる場合
             else{
                 if(selectplayer()){
                     cardchange_rem4(nump1, p1);
-                    outlog << "p1:"<<nump1<<endl;
+                    cout << "p1:"<<nump1<<endl;
                 }
                 else{
                     cardchange(nump2, p2);
-                    outlog << "p2:"<<nump2<<endl;
+                    cout << "p2:"<<nump2<<endl;
                 }
             }
 
             //出力
             int infcnt = 0;
             for(int i=0; i<4; i++){
-                if(p1.card4[i]==INF) {infcnt++; outlog << "- ";}
-                else outlog << p1.card4[i] << " ";
+                if(p1.card4[i]==INF) {infcnt++; cout << "- ";}
+                else cout << p1.card4[i] << " ";
             }
-            outlog << endl;
-            outlog << "  "<< x << "  "<< y << endl;
-            for(int i=0; i<4; i++) outlog << p2.card4[i] << " ";
-            outlog << "rem: " << p2.q.size() << endl;
-            outlog << endl;
+            cout << endl;
+            cout << "  "<< x << "  "<< y << endl;
+            for(int i=0; i<4; i++) cout << p2.card4[i] << " ";
+            cout << "rem: " << p2.q.size() << endl;
+            cout << endl;
             
             //p2も手札がなくなったら次の段階に進む
             if(p2.q.empty() || infcnt==4) flag = 0;
@@ -196,28 +205,28 @@ struct Game{
             if(nump1==INF && nump2==INF){
                 x = random4(p1);
                 y = random4(p2);
-                outlog << "p1:"<<x<<" p2:"<<y<<endl;
+                cout << "p1:"<<x<<" p2:"<<y<<endl;
             }
             //どちらのプレイヤーがカードを出すか
             //p2のみ出せる場合
             else if(nump1==INF && nump2!=INF){
                 cardchange_rem4(nump2, p2);
-                outlog << "p2:"<<nump2<<endl;
+                cout << "p2:"<<nump2<<endl;
             }
             //p1のみ出せる場合
             else if(nump1!=INF && nump2==INF){
                 cardchange_rem4(nump1, p1);
-                outlog << "p1:"<<nump1<<endl;
+                cout << "p1:"<<nump1<<endl;
             }
             //どちらも出せる場合
             else{
                 if(selectplayer()){
                     cardchange_rem4(nump1, p1);
-                    outlog << "p1:"<<nump1<<endl;
+                    cout << "p1:"<<nump1<<endl;
                 }
                 else{
                     cardchange_rem4(nump2, p2);
-                    outlog << "p2:"<<nump2<<endl;
+                    cout << "p2:"<<nump2<<endl;
                 }
             }
 
@@ -225,22 +234,95 @@ struct Game{
             int infcnt = 0;
             int tmp = 0;
             for(int i=0; i<4; i++){
-                if(p1.card4[i]==INF) {tmp++; outlog << "- ";}
-                else outlog << p1.card4[i] << " ";
+                if(p1.card4[i]==INF) {tmp++; cout << "- ";}
+                else cout << p1.card4[i] << " ";
             }
-            outlog << endl;
+            cout << endl;
             infcnt = tmp;
             tmp = 0;
-            outlog << "  "<< x << "  "<< y << endl;
+            cout << "  "<< x << "  "<< y << endl;
             for(int i=0; i<4; i++){
-                if(p2.card4[i]==INF) {tmp++; outlog << "- ";}
-                else outlog << p2.card4[i] << " ";
+                if(p2.card4[i]==INF) {tmp++; cout << "- ";}
+                else cout << p2.card4[i] << " ";
             }
-            outlog << endl;            
-            outlog << endl;
+            cout << endl;            
+            cout << endl;
             
             infcnt = max(infcnt, tmp);
             if(infcnt==4) flag = 0;
+        }
+    }
+
+    //ユーザーの入力を受け付ける
+    pair<bool, pair<int, char>> userinput(int cpunum, set<int> cards){
+        chrono::system_clock::time_point start, end, end1;
+
+        int a, b;
+        double time = 0.0, time2 = 0.0;
+        bool flag = 0;
+        string buf;
+        vector<string> v;
+        int input;
+
+        start = chrono::system_clock::now();
+        //入力があるまで時間を計り続ける
+        while(!flag && time<=4){
+            end = chrono::system_clock::now();
+            time = static_cast<double>(chrono::duration_cast<chrono::milliseconds>(end - start).count() / 1000.0);
+            // cout << "time: " << time << endl;
+
+            time2 = 0.0;
+            while(!_kbhit() && time2<=1){
+                end1 = chrono::system_clock::now();
+                time2 = static_cast<double>(chrono::duration_cast<chrono::milliseconds>(end1 - end).count() / 1000.0);  
+                // cout << time2 << endl;
+            }
+            // cout << time2 << endl;
+            if(time2<=1){
+                char ch = _getch();
+                if((int)ch==13){
+                    string s;
+                    stringstream ss{buf};
+                    //v[0]には数字、v[1]にはrまたはlが入力されているはず
+                    while(getline(ss, s, ' ')) v.push_back(s);
+                    
+                    //数字に変換できるかのエラー処理
+                    try {
+                        input = stoi(v[0]);
+                    }
+                    catch(invalid_argument& e){
+                        cout << "INPUT RETRY" << endl;
+                        continue;
+                    }
+                    //入力が多すぎたり数値が大きすぎたらエラー
+                    if((int)v.size()!=2 || input<1 || input>13 || !(v[1]=="r"||v[1]=="l")){
+                        cout << "INPUT RETRY" << endl;
+                        continue;
+                    }
+                    else {
+                        //入力したカードが出せるカードかどうか判定する
+                        //出せるカード->a,bの四則演算の結果，かつ場にある4枚のカード
+                        bool flag1 = 0, flag2 = 0;
+                        for(auto v:cards) if(v==input) flag1 = 1;
+                        for(auto v:player.card4) if(v==input) flag2 = 1;
+
+                        if(flag1 && flag2){
+                            flag = 1;
+                            string ms = (v[1]=="r") ? "right":"left";
+                            cout << input << " " << ms << endl;
+                            break;
+                        }
+                        else cout << input << " cannot pull out. retry." << endl;
+                    }
+                }
+                else buf.push_back(ch);
+            }        
+        }
+        //ユーザーが手札を出したときには1，タイムアウトしたら0を返す
+        if(flag) return {1,{input, v[0][0]}};
+        else{
+            if(selectplayer()) return {0,{cpunum, 'r'}};
+            else return {0,{cpunum, 'l'}};
         }
     }
 
