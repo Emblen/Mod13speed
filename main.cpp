@@ -253,7 +253,7 @@ struct Game{
             }
             if(p1.q.size()!=0) cout << "rem: " << p1.q.size();
             cout << endl;
-            
+
             infcnt = tmp;
             tmp = 0;
             cout << "  "<< x << "  "<< y << endl;
@@ -362,10 +362,12 @@ struct Game{
             // cout << time2 << endl;
             if(time2<=1){
                 char ch = _getch();
+                
                 if((int)ch==13){
+                    cout << buf << endl;
                     //bufに何もなければ（エンターだけ押されたら）落ちるらしい
                     if((int)buf.size()==0){
-                        cout << "INPUT RETRY0" << endl;
+                        cout << "INPUT ERROR: code=0" << endl;
                         continue;
                     }
 
@@ -379,12 +381,12 @@ struct Game{
                         input = stoi(v[0]);
                     }
                     catch(invalid_argument& e){
-                        cout << "INPUT RETRY0" << endl;
+                        cout << "INPUT ERROR: code=1" << endl;
                         continue;
                     }
                     //入力が多すぎたり数値が大きすぎたらエラー
                     if((int)v.size()!=2 || input<1 || input>13 || !(v[1]=="r"||v[1]=="l")){
-                        cout << "INPUT RETRY1" << endl;
+                        cout << "INPUT ERROR: code=2" << endl;
                         continue;
                     }
                     else {
@@ -405,6 +407,7 @@ struct Game{
                         }
                         else cout << input << " cannot pull out. retry." << endl;
                     }
+                    buf.erase();
                 }
                 else buf.push_back(ch);
             }        
@@ -423,18 +426,18 @@ struct Game{
         
         cout << "cpu cannot pull out" << endl;
 
-        while(true){
-            int input; char c; 
+        while(!flag){
+            int input; string c; 
             cin >> input >> c;
                 
             //数字かどうかのエラー処理
             if(input==0){
-                cout << "INPUT RETRY0" << endl;
+                cout << "INPUT ERROR0" << endl;
                 continue;
             }
             //入力が多すぎたり数値が大きすぎたらエラー
-            if(input<1 || input>13 || !(c=='r'||c=='l')){
-                cout << "INPUT RETRY1" << endl;
+            if(input<1 || input>13 || !(c=="r"||c=="l")){
+                cout << "INPUT ERROR1" << endl;
                 continue;
             }
             else {
@@ -452,7 +455,7 @@ struct Game{
                     // string s = (c=='r') ? "right":"left";
                     // cout << input << " " << s << endl;
 
-                    return {input, c};
+                    return {input, c[0]};
                 }
                 else cout << input << " cannot pull out. retry." << endl;
             }
