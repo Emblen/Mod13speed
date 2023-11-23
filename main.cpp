@@ -221,8 +221,7 @@ struct Game{
                 if(uin.first){
                     if(mode) cardchange_rem4(uin.second.first, player, uin.second.second);
                     else cardchange(uin.second.first, player, uin.second.second);          
-
-                    cout << uin.second.second << endl;
+                
                     string s = (uin.second.second=='r') ? "right":"left";
                     cout << "you: "<< uin.second.first << " " << s << endl;
                 }
@@ -252,7 +251,9 @@ struct Game{
                 if(p1.card4[i]==INF) {tmp++; cout << "- ";}
                 else cout << p1.card4[i] << " ";
             }
-            if(p1.q.size()!=0) cout << "rem: " << p1.q.size() << endl;
+            if(p1.q.size()!=0) cout << "rem: " << p1.q.size();
+            cout << endl;
+            
             infcnt = tmp;
             tmp = 0;
             cout << "  "<< x << "  "<< y << endl;
@@ -409,7 +410,7 @@ struct Game{
             }        
         }
         //ユーザーが手札を出したときには1，タイムアウトしたら0を返す
-        if(flag) return {1,{input, v[0][0]}};
+        if(flag) return {1,{input, v[1][0]}};
         else{
             if(selectplayer()) return {0,{cpunum, 'r'}};
             else return {0,{cpunum, 'l'}};
