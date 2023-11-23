@@ -62,6 +62,9 @@ struct Game{
     }
 
     void gamestart(){
+        cout << "GAME START" << endl;
+        cout << endl;
+
         for(int i=0; i<4; i++) cout << cpu.card4[i] << " ";
         cout << "rem: " << cpu.q.size() << endl;
         cout << "  "<< x << "  "<<y << endl;
@@ -70,6 +73,7 @@ struct Game{
         cout << endl;
 
         first_battle();
+        cout << "second stage" << endl;
         second_battle(cpu, player);
 
         cout << "FINISH" << endl;
@@ -88,7 +92,7 @@ struct Game{
                 x = cpu.q.front(); cpu.q.pop();
                 y = player.q.front(); player.q.pop();
                 cout << "RESTART" << endl;
-                cout << "cpu:"<<x<<" you:"<<y<<endl;
+                cout << "cpu: "<<x<<" you: "<<y<<endl;
             }
             
             //どちらのプレイヤーがカードを出すか
@@ -97,17 +101,26 @@ struct Game{
                 pair<int, char> uin = userinput2(cards);
 
                 cardchange(uin.first, player, uin.second);
-                cout << "p2:"<< uin.first << endl;
+                string s = (uin.second=='r') ? "right":"left";
+                cout << "you: "<< uin.first << " " << s << endl;
             }
 
             //p1のみ出せる場合
             else if(nump1!=INF && nump2==INF){
                 char c;
-                if(selectplayer()) c = 'r';
-                else c = 'l';
+                string s;
+                if(selectplayer()) {
+                    c = 'r';
+                    s = "right";
+                }
+                else{
+                    c = 'l';
+                    s = "left";
+                }
 
                 cardchange(nump1, cpu, c);
-                cout << "p1:"<<nump1<<endl;
+                cout << "you cannot pull out" << endl;
+                cout << "cpu: "<< nump1 << " " << s << endl;
             }
 
             //どちらも出せる場合
@@ -118,14 +131,22 @@ struct Game{
 
                 if(uin.first){
                     cardchange(uin.second.first, player, uin.second.second);
-                    cout << "p2:"<<uin.second.first<<endl;
+                    string s = (uin.second.second=='r') ? "right":"left";
+                    cout << "you: "<< uin.second.first << " " << s << endl;
                 }
                 else{
                     char c;
-                    if(selectplayer()) c = 'r';
-                    else c = 'l';
+                    string s;
+                    if(selectplayer()) {
+                        c = 'r';
+                        s = "right";
+                    }
+                    else{
+                        c = 'l';
+                        s = "left";
+                    }
                     cardchange(nump1, cpu, c);
-                    cout << "p1:"<<nump1<<endl;
+                    cout << "cpu: "<< nump1 << " " << s << endl;
                 }
             }
 
@@ -178,14 +199,20 @@ struct Game{
             }
             //p1のみ出せる場合
             else if(nump1!=INF && nump2==INF){
-                char c; 
-                if(selectplayer()) c = 'r';
-                else c = 'l';
-
+                char c;
+                string s;
+                if(selectplayer()) {
+                    c = 'r';
+                    s = "right";
+                }
+                else{
+                    c = 'l';
+                    s = "left";
+                }
                 if(!mode) cardchange_rem4(nump1, p1, c);
                 else cardchange(nump1, p1, c);
 
-                cout << "p1:"<<nump1<<endl;
+                cout << "cpu: "<< nump1 << " " << s << endl;
             }
             //どちらも出せる場合
             else{
@@ -193,17 +220,28 @@ struct Game{
 
                 if(uin.first){
                     if(mode) cardchange_rem4(uin.second.first, player, uin.second.second);
-                    else cardchange(uin.second.first, player, uin.second.second);                    
-                    cout << "p2:"<<uin.second.first<<endl;
+                    else cardchange(uin.second.first, player, uin.second.second);          
+
+                    cout << uin.second.second << endl;
+                    string s = (uin.second.second=='r') ? "right":"left";
+                    cout << "you: "<< uin.second.first << " " << s << endl;
                 }
+
                 else{
                     char c;
-                    if(selectplayer()) c = 'r';
-                    else c = 'l';
+                    string s;
+                    if(selectplayer()) {
+                        c = 'r';
+                        s = "right";
+                    }
+                    else{
+                        c = 'l';
+                        s = "left";
+                    }
                     if(!mode) cardchange_rem4(nump1, p1, c);
                     else cardchange(nump1, p1, c);
 
-                    cout << "p1:"<<nump1<<endl;
+                    cout << "cpu: "<< nump1 << " " << s << endl;
                 }
             }
 
@@ -214,7 +252,7 @@ struct Game{
                 if(p1.card4[i]==INF) {tmp++; cout << "- ";}
                 else cout << p1.card4[i] << " ";
             }
-            cout << endl;
+            if(p1.q.size()!=0) cout << "rem: " << p1.q.size() << endl;
             infcnt = tmp;
             tmp = 0;
             cout << "  "<< x << "  "<< y << endl;
@@ -222,7 +260,7 @@ struct Game{
                 if(p2.card4[i]==INF) {tmp++; cout << "- ";}
                 else cout << p2.card4[i] << " ";
             }
-            cout << endl;            
+            if(p2.q.size()!=0) cout << "rem: " << p2.q.size() << endl;        
             cout << endl;
             
             infcnt = max(infcnt, tmp);
@@ -324,6 +362,12 @@ struct Game{
             if(time2<=1){
                 char ch = _getch();
                 if((int)ch==13){
+                    //bufに何もなければ（エンターだけ押されたら）落ちるらしい
+                    if((int)buf.size()==0){
+                        cout << "INPUT RETRY0" << endl;
+                        continue;
+                    }
+
                     string s;
                     stringstream ss{buf};
                     //v[0]には数字、v[1]にはrまたはlが入力されているはず
@@ -334,12 +378,12 @@ struct Game{
                         input = stoi(v[0]);
                     }
                     catch(invalid_argument& e){
-                        cout << "INPUT RETRY" << endl;
+                        cout << "INPUT RETRY0" << endl;
                         continue;
                     }
                     //入力が多すぎたり数値が大きすぎたらエラー
                     if((int)v.size()!=2 || input<1 || input>13 || !(v[1]=="r"||v[1]=="l")){
-                        cout << "INPUT RETRY" << endl;
+                        cout << "INPUT RETRY1" << endl;
                         continue;
                     }
                     else {
@@ -354,8 +398,8 @@ struct Game{
 
                         if(flag1 && flag2){
                             flag = 1;
-                            string ms = (v[1]=="r") ? "right":"left";
-                            cout << input << " " << ms << endl;
+                            // string ms = (v[1]=="r") ? "right":"left";
+                            // cout << input << " " << ms << endl;
                             break;
                         }
                         else cout << input << " cannot pull out. retry." << endl;
@@ -378,7 +422,7 @@ struct Game{
         
         cout << "cpu cannot pull out" << endl;
 
-        while(!flag){
+        while(true){
             int input; char c; 
             cin >> input >> c;
                 
@@ -404,8 +448,8 @@ struct Game{
 
                 if(flag1 && flag2){
                     flag = 1;
-                    string s = (c=='r') ? "right":"left";
-                    cout << input << " " << s << endl;
+                    // string s = (c=='r') ? "right":"left";
+                    // cout << input << " " << s << endl;
 
                     return {input, c};
                 }
