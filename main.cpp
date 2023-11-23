@@ -263,6 +263,7 @@ struct Game{
             }
             if(p2.q.size()!=0) cout << "rem: " << p2.q.size() << endl;        
             cout << endl;
+            cout << endl;
             
             infcnt = max(infcnt, tmp);
             if(infcnt==4) flag = 0;
