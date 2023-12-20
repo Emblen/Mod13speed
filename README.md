@@ -7,4 +7,7 @@
 4. 残りの手札カードの枚数はremの隣に表示されています．
 5. あとはコンソールに出てくる指示に従ってください
 
+↓↓↓ Mod13スピードの詳しい説明 ↓↓↓<br>
+https://emblen.hatenablog.com/entry/2023/12/13/002908
+
  ![mod13](https://github.com/Emblen/Mod13speed/assets/89460730/9b6cf47f-fbae-4c3c-a95e-9536eaba0ac9)
